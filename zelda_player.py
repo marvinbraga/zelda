@@ -67,8 +67,7 @@ class ZeldaPlayerSprite(pygame.sprite.Sprite):
     def _invalidate(self, *args):
         self.image = self.sprites[int(self.index)]
         self.width, self.height = self.image.get_size()
-        self.width = int(self.width * self.scale)
-        self.height = int(self.height * self.scale)
+        self.width, self.height = int(self.width * self.scale), int(self.height * self.scale)
         self.image = pygame.transform.scale(self.image, (self.width, self.height))
         self.rect = self.image.get_rect()
         self.rect.topleft = args
@@ -80,23 +79,18 @@ class ZeldaPlayer(AbstractPlayer):
 
     def __init__(self, screen, x, y, speed=4):
         self._screen = screen
-        self.display = None
+        self._undo_rect, self.sprite, self.display = None, None, None
+        self._is_free = True
         # Position
-        self.x = x
-        self.y = y
-        self.width = 0
-        self.height = 0
+        self.x, self.y, self.width, self.height = x, y, 0, 0
         # Movement
         self._movement = Movement.NONE
         self.speed = speed
         # Setup
         self.color = (0, 0, 255)
         self.sprites = pygame.sprite.Group()
-        self.sprite = None
-        self._is_free = True
-        self._undo_rect = None
 
-    def save_undo(self):
+    def _save_undo(self):
         """ Save rect of old rect data """
         self._undo_rect = (self.x, self.y, self.width, self.height)
         return self
@@ -152,7 +146,7 @@ class ZeldaPlayer(AbstractPlayer):
 
     def tick(self):
         """ Apply _movement. """
-        self.save_undo()
+        self._save_undo()
         if self._movement == Movement.RIGHT:
             self.x += self.speed
         if self._movement == Movement.LEFT:
