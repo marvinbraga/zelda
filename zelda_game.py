@@ -47,6 +47,7 @@ class ZeldaGame(AbstractGame):
 
     def update(self):
         """ Method to update de zelda game. """
+        self.set_player_movement()
         if not self.player.screen:
             self.player.set_screen(self._screen)
 

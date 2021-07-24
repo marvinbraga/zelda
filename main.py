@@ -26,7 +26,6 @@ def start(game):
                 pygame.quit()
                 exit()
 
-        game.set_player_movement()
         game.update()
         # Update pygame screen.
         pygame.display.flip()
