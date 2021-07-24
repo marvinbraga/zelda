@@ -2,6 +2,7 @@
 """
 ZeldaPlayer Module
 """
+import math
 import os
 from enum import Enum
 
@@ -92,6 +93,18 @@ class ZeldaPlayer(AbstractPlayer):
         self.color = (0, 0, 255)
         self.sprites = pygame.sprite.Group()
         self.sprite = None
+        self._is_free = True
+        self._undo_rect = None
+
+    def save_undo(self):
+        """ Save rect of old rect data """
+        self._undo_rect = (self.x, self.y, self.width, self.height)
+        return self
+
+    def restore(self):
+        """ Restore data from undo. """
+        self.x, self.y, self.width, self.height = self._undo_rect
+        return self
 
     @property
     def movement(self):
@@ -102,7 +115,6 @@ class ZeldaPlayer(AbstractPlayer):
         """ Set movement """
         if self.sprite.movement != Movement.NONE:
             self.sprite.old_movement = self._movement
-            print('self.sprite.old_movement = ', self.sprite.old_movement)
         self.sprite.movement = value
 
         self._movement = value
@@ -124,18 +136,23 @@ class ZeldaPlayer(AbstractPlayer):
 
     def check_limits(self):
         """ Verify _screen limits """
+        # Right
         if self.x > self.display[0]:
-            self.x = 0
+            self.x = 0 - self.width
+        # Left
         if self.x < 0 - self.width:
             self.x = self.display[0]
+        # Bottom
         if self.y > self.display[1]:
-            self.y = 0
+            self.y = 0 - self.height
+        # Top
         if self.y < 0 - self.height:
             self.y = self.display[1]
         return self
 
     def tick(self):
         """ Apply _movement. """
+        self.save_undo()
         if self._movement == Movement.RIGHT:
             self.x += self.speed
         if self._movement == Movement.LEFT:
@@ -150,10 +167,15 @@ class ZeldaPlayer(AbstractPlayer):
         """ Paint _screen with player setup. """
         if not self.display:
             self.display = self._screen.get_size()
-
         self.tick().check_limits()
-        # pygame.draw.rect(
-        #     self._screen, self.color, (self.x, self.y, self.width, self.height))
         self.sprites.draw(self._screen)
         self.sprites.update(self.x, self.y)
+        self._is_free = True
         return self
+
+    def is_free(self, obj):
+        """ Verify if players is not in collision. """
+        rect_1 = pygame.Rect(obj.x, obj.y, obj.width, obj.height)
+        rect_2 = pygame.Rect(self.x, self.y, self.width, self.height)
+        self._is_free = not rect_2.colliderect(rect_1)
+        return self._is_free
