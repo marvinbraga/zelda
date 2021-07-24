@@ -2,7 +2,6 @@
 """
 ZeldaPlayer Module
 """
-import math
 import os
 from enum import Enum
 
@@ -28,26 +27,24 @@ class ZeldaPlayerSprite(pygame.sprite.Sprite):
     _COUNT_SPRITE_COL = 5
     _ITER_IMAGE = 0.2
 
-    def __init__(self, x, y, scale=1):
+    def __init__(self, x, y, scale=1.0):
         super(ZeldaPlayerSprite, self).__init__()
         self.index = 0
         self.scale = scale
-        self.old_movement = Movement.NONE
-        self.movement = Movement.NONE
+        self.sprites = []
+        self.old_movement, self.movement = Movement.NONE, Movement.NONE
+        self.image, self.rect = None, None
+        self.width, self.height = 0, 0
+        self._load_sprites()._invalidate(x, y)
+
+    def _load_sprites(self):
         file = os.path.join(SPRITES_DIR, 'player.png')
         sheet = pygame.image.load(file).convert_alpha()
-        self.sprites = []
         for x in range(self._COUNT_SPRITE_LIN):
             for y in range(self._COUNT_SPRITE_COL):
                 rect = (90 * y, 90 * x, 90, 90)
                 self.sprites.append(sheet.subsurface(rect))
-        self.image = self.sprites[self.index]
-        self.width, self.height = self.image.get_size()
-        self.width *= scale
-        self.height *= scale
-        self.image = pygame.transform.scale(self.image, (self.width, self.height))
-        self.rect = self.image.get_rect()
-        self.rect.topleft = x, y
+        return self
 
     def set_index(self, value):
         """ Set index image to sprite """
@@ -65,14 +62,17 @@ class ZeldaPlayerSprite(pygame.sprite.Sprite):
 
     def update(self, *args, **kwargs):
         """ Update image """
-        self.set_index(self.index)
+        self.set_index(self.index)._invalidate(*args)
+
+    def _invalidate(self, *args):
         self.image = self.sprites[int(self.index)]
         self.width, self.height = self.image.get_size()
-        self.width *= self.scale
-        self.height *= self.scale
+        self.width = int(self.width * self.scale)
+        self.height = int(self.height * self.scale)
         self.image = pygame.transform.scale(self.image, (self.width, self.height))
         self.rect = self.image.get_rect()
         self.rect.topleft = args
+        return self
 
 
 class ZeldaPlayer(AbstractPlayer):
@@ -129,7 +129,7 @@ class ZeldaPlayer(AbstractPlayer):
     def set_screen(self, screen):
         """ Set player _screen """
         self._screen = screen
-        self.sprite = ZeldaPlayerSprite(self.x, self.y)
+        self.sprite = ZeldaPlayerSprite(self.x, self.y, scale=0.9)
         self.sprites.add(self.sprite)
         self.width = self.sprite.width
         self.height = self.sprite.height

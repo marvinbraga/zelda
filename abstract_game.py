@@ -36,10 +36,10 @@ class AbstractGame(metaclass=ABCMeta):
         """ Get title to window screen. """
         pass
 
-    def fill_background(self):
+    def fill_background(self, color=(0, 135, 13)):
         """ Update background. """
         self.timer.tick(30)
-        self._screen.fill((0, 0, 0))
+        self._screen.fill(color)
         if self.background:
             self._screen.blit(self.background, (0, 0))
         return self
