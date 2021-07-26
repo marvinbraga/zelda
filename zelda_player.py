@@ -34,7 +34,7 @@ class ZeldaPlayerSprite(pygame.sprite.Sprite):
         self.sprites = []
         self.old_movement, self.movement = Movement.NONE, Movement.NONE
         self.image, self.rect = None, None
-        self.width, self.height = 0, 0
+        self.width, self.height = 32, 32
         self._load_sprites()._invalidate(x, y)
 
     def _load_sprites(self):
@@ -92,7 +92,7 @@ class ZeldaPlayer(AbstractPlayer):
 
     def _save_undo(self):
         """ Save rect of old rect data """
-        self._undo_rect = (self.x, self.y, self.width, self.height)
+        self._undo_rect = self.x, self.y, self.width, self.height
         return self
 
     def restore(self):
@@ -165,6 +165,7 @@ class ZeldaPlayer(AbstractPlayer):
         self.sprites.draw(self._screen)
         self.sprites.update(self.x, self.y)
         self._is_free = True
+        self.set_movement(Movement.NONE)
         return self
 
     def is_free(self, obj):

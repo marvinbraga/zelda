@@ -57,6 +57,5 @@ class ZeldaGame(AbstractGame):
             self.player.restore()
         # Update player in screen.
         self.player.update()
-        self.player.set_movement(Movement.NONE)
 
         return self
