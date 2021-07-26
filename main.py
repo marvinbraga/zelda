@@ -32,4 +32,4 @@ def start(game):
 
 
 if __name__ == '__main__':
-    start(ZeldaGame(display_size=(480, 480)))
+    start(ZeldaGame(display_size=(640, 480)))

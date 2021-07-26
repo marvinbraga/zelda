@@ -14,14 +14,18 @@ class ZeldaWorld:
 
     def _create_blocks(self):
         """ Init blocks """
-        for x in range(15):
-            self.blocks.append(ZeldaBlock(x * 32, 0).set_screen(self._screen))
-        for x in range(15):
-            self.blocks.append(ZeldaBlock(x * 32, 480 - 32).set_screen(self._screen))
-        for y in range(15):
-            self.blocks.append(ZeldaBlock(0, y * 32).set_screen(self._screen))
-        for y in range(15):
-            self.blocks.append(ZeldaBlock(480 - 32, y * 32).set_screen(self._screen))
+        size = ZeldaBlock.SIZE
+        display_size = self._screen.get_size()
+        col_blocks = int(display_size[0] / size)
+        row_blocks = int(display_size[1] / size)
+        for x in range(col_blocks):
+            self.blocks.append(ZeldaBlock(x * size, 0).set_screen(self._screen))
+        for x in range(col_blocks):
+            self.blocks.append(ZeldaBlock(x * size, display_size[1] - size).set_screen(self._screen))
+        for y in range(row_blocks):
+            self.blocks.append(ZeldaBlock(0, y * size).set_screen(self._screen))
+        for y in range(row_blocks):
+            self.blocks.append(ZeldaBlock(display_size[0] - size, y * size).set_screen(self._screen))
         return self
 
     def set_screen(self, screen):

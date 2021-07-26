@@ -48,9 +48,10 @@ class ZeldaBlockSprite(pygame.sprite.Sprite):
 
 class ZeldaBlock:
     """ Block """
+    SIZE = 32
 
     def __init__(self, x, y):
-        self.y, self.x, self.width, self.height = y, x, 32, 32
+        self.y, self.x, self.width, self.height = y, x, self.SIZE, self.SIZE
         self.display, self.sprite, self._screen = None, None, None
         self.sprites = pygame.sprite.Group()
 
