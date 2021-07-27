@@ -35,7 +35,7 @@ class AbstractGame(metaclass=ABCMeta):
 
     def fill_background(self, color=(0, 0, 0)):
         """ Update background. """
-        self.timer.tick(60)
+        self.timer.tick(30)
         self._screen.fill(color)
         if self.background:
             self._screen.blit(self.background, (0, 0))
