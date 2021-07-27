@@ -10,21 +10,21 @@ from zelda_game import ZeldaGame
 
 def start(game):
     """  Start game method """
-    pygame.init()
-    screen = pygame.display.set_mode(game.display_size)
-    game.set_screen(screen)
     pygame.display.set_caption(game.title())
-
     # Game Loop
-    while True:
+    while game.running:
         # Update background
-        game.fill_background()
+        game.fill_background(color=(0, 128, 0))
         # Event loop
         for event in pygame.event.get():
-            # Key to exit
             if event.type == QUIT:
-                pygame.quit()
+                game.running = False
                 exit()
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    game.running = False
+            else:
+                game.check_events(event)
 
         game.update()
         # Update pygame screen.
@@ -32,4 +32,11 @@ def start(game):
 
 
 if __name__ == '__main__':
-    start(ZeldaGame(display_size=(640, 480)))
+    pygame.mixer.init()
+    pygame.init()
+    try:
+        start(ZeldaGame(display_size=(640, 480)))
+    finally:
+        # pygame.mixer.music.stop()
+        pygame.mixer.quit()
+        pygame.quit()

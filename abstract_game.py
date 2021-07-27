@@ -13,6 +13,7 @@ class AbstractGame(metaclass=ABCMeta):
     def __init__(self, display_size):
         self._display_size = display_size
         self._screen = None
+        self.running = True
         self.timer = pygame.time.Clock()
         self.background = None
 
@@ -21,14 +22,10 @@ class AbstractGame(metaclass=ABCMeta):
         """ Return tuple with display size. """
         return self._display_size
 
-    def set_screen(self, value):
-        """
-        Set pygame screen
-        :param value: pygame screen
-        :return: self
-        """
-        self._screen = value
-        return self
+    @property
+    def screen(self):
+        """ Return screen """
+        return self._screen
 
     @property
     @abstractmethod
@@ -36,9 +33,9 @@ class AbstractGame(metaclass=ABCMeta):
         """ Get title to window screen. """
         pass
 
-    def fill_background(self, color=(0, 135, 13)):
+    def fill_background(self, color=(0, 0, 0)):
         """ Update background. """
-        self.timer.tick(30)
+        self.timer.tick(60)
         self._screen.fill(color)
         if self.background:
             self._screen.blit(self.background, (0, 0))
@@ -47,4 +44,9 @@ class AbstractGame(metaclass=ABCMeta):
     @abstractmethod
     def update(self):
         """ Method to update game history. """
+        pass
+
+    @abstractmethod
+    def check_events(self, event):
+        """ Method to check events updates. """
         pass

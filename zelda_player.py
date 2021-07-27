@@ -2,175 +2,100 @@
 """
 ZeldaPlayer Module
 """
-import os
-from enum import Enum
-
 import pygame
+from pygame.locals import (K_UP, K_DOWN, K_LEFT, K_RIGHT, RLEACCEL)
 
-from abstract_player import AbstractPlayer
-from settings import SPRITES_DIR
-
-
-class Movement(Enum):
-    """ Movement data """
-    NONE = 99
-    LEFT = 0
-    RIGHT = 5
-    UP = 10
-    DOWN = 15
+from abstract_sprite_manager import AbstractSpriteManager
+from settings import FileUtil
 
 
-class ZeldaPlayerSprite(pygame.sprite.Sprite):
-    """ Sprite class to Zelda Player """
+class PlayerSpritesImages(AbstractSpriteManager):
+    """ Images to sprite """
 
-    _COUNT_SPRITE_LIN = 4
-    _COUNT_SPRITE_COL = 5
-    _ITER_IMAGE = 0.2
-
-    def __init__(self, x, y, scale=1.0):
-        super(ZeldaPlayerSprite, self).__init__()
-        self.index = 0
-        self.scale = scale
-        self.sprites = []
-        self.old_movement, self.movement = Movement.NONE, Movement.NONE
-        self.image, self.rect = None, None
-        self.width, self.height = 32, 32
-        self._load_sprites()._invalidate(x, y)
+    def __init__(self, filename, display_size, scale=1.0, color_key=(116, 116, 116)):
+        super(PlayerSpritesImages, self).__init__()
+        self._color_key = color_key
+        self._filename = filename
+        self._scale = scale
+        # transform to scale
+        w, h = display_size.get_size()
+        self._load_sprites().set_index((0, 1)).prepare_image(center=(w / 2 - 16, h / 2 - 16))
 
     def _load_sprites(self):
-        file = os.path.join(SPRITES_DIR, 'player.png')
-        sheet = pygame.image.load(file).convert_alpha()
-        for x in range(self._COUNT_SPRITE_LIN):
-            for y in range(self._COUNT_SPRITE_COL):
-                rect = (90 * y, 90 * x, 90, 90)
-                self.sprites.append(sheet.subsurface(rect))
-        return self
-
-    def set_index(self, value):
-        """ Set index image to sprite """
-        if self.movement == self.old_movement:
-            self.index = value
-        elif self.movement != Movement.NONE:
-            self.index = self.movement.value
-        # Restart
-        if self.index > self.movement.value + self._COUNT_SPRITE_LIN:
-            self.index = self.movement.value
-        # Not stopped
-        if self.movement != Movement.NONE:
-            self.index += self._ITER_IMAGE
-        return self
-
-    def update(self, *args, **kwargs):
-        """ Update image """
-        self.set_index(self.index)._invalidate(*args)
-
-    def _invalidate(self, *args):
-        self.image = self.sprites[int(self.index)]
-        self.width, self.height = self.image.get_size()
-        self.width, self.height = int(self.width * self.scale), int(self.height * self.scale)
-        self.image = pygame.transform.scale(self.image, (self.width, self.height))
-        self.rect = self.image.get_rect()
-        self.rect.topleft = args
+        # constants
+        size = (16, 16)
+        basic_movement = ((1, 11), (18, 11), (35, 11), (52, 11), (69, 11), (86, 11))
+        # get sprites
+        img = FileUtil('./sprites/aula05-spritesheet.png').get()
+        img = pygame.image.load(img).convert_alpha()
+        img.set_colorkey(self._color_key, RLEACCEL)
+        for pos in basic_movement:
+            rect = (pos[0], pos[1], size[0], size[1])
+            self._sprites.append(img.subsurface(rect))
+        # Add left movement
+        for pos in basic_movement:
+            rect = (pos[0], pos[1], size[0], size[1])
+            if pos[0] in [35, 52]:
+                # Flip the image to left movement
+                self._sprites.append(pygame.transform.flip(img.subsurface(rect), True, False))
         return self
 
 
-class ZeldaPlayer(AbstractPlayer):
-    """ Class player. """
+class ZeldaPlayer(pygame.sprite.Sprite):
+    """ New Class """
 
-    def __init__(self, screen, x, y, speed=4):
-        self._screen = screen
-        self._undo_rect, self.sprite, self.display = None, None, None
-        self._is_free = True
-        # Position
-        self.x, self.y, self.width, self.height = x, y, 0, 0
-        # Movement
-        self._movement = Movement.NONE
-        self.speed = speed
-        # Setup
-        self.color = (0, 0, 255)
-        self.sprites = pygame.sprite.Group()
+    def __init__(self, display_size, sprites, speed=4, scale=1.0):
+        super(ZeldaPlayer, self).__init__()
+        self._scale = scale
+        self._speed = speed
+        self._sprites = sprites
+        self._display_size = display_size
+        # image load
+        self._sprite = PlayerSpritesImages('./sprites/aula05-spritesheet.png', display_size, 1.9)
+        self.image, self.rect = self._sprite.image_rect
+        self.rect_undo = self.rect.copy()
+        # sprites groups
+        self._add_sprites()
 
-    def _save_undo(self):
-        """ Save rect of old rect data """
-        self._undo_rect = self.x, self.y, self.width, self.height
+    def _add_sprites(self):
+        """ Add object to sprites. """
+        for s in self._sprites:
+            s.add(self)
         return self
 
-    def restore(self):
-        """ Restore data from undo. """
-        self.x, self.y, self.width, self.height = self._undo_rect
+    def _update_image_rect(self, *pos):
+        self.image, self.rect = self._sprite.set_index(*pos).prepare_image(topleft=self.rect.topleft).image_rect
         return self
 
-    @property
-    def movement(self):
-        """ Return movement """
-        return self._movement
-
-    def set_movement(self, value):
-        """ Set movement """
-        if self.sprite.movement != Movement.NONE:
-            self.sprite.old_movement = self._movement
-        self.sprite.movement = value
-
-        self._movement = value
-        self.sprite.set_index(self.sprite.index)
+    def move(self, pressed_keys):
+        """ Set player movement """
+        self.rect_undo = self.rect.copy()
+        if pressed_keys[K_UP]:
+            self._update_image_rect((4, 5))
+            self.rect.move_ip(0, -self._speed)
+        if pressed_keys[K_DOWN]:
+            self._update_image_rect((0, 1))
+            self.rect.move_ip(0, self._speed)
+        if pressed_keys[K_LEFT]:
+            self._update_image_rect((6, 7))
+            self.rect.move_ip(-self._speed, 0)
+        if pressed_keys[K_RIGHT]:
+            self._update_image_rect((2, 3))
+            self.rect.move_ip(self._speed, 0)
+        self._check_limits()
         return self
 
-    @property
-    def screen(self):
-        """ Return screen property """
-        return self._screen
-
-    def set_screen(self, screen):
-        """ Set player _screen """
-        self._screen = screen
-        self.sprite = ZeldaPlayerSprite(self.x, self.y, scale=0.9)
-        self.sprites.add(self.sprite)
-        self.width = self.sprite.width
-        self.height = self.sprite.height
-
-    def check_limits(self):
-        """ Verify _screen limits """
-        # Right
-        if self.x > self.display[0]:
-            self.x = 0 - self.width
-        # Left
-        if self.x < 0 - self.width:
-            self.x = self.display[0]
-        # Bottom
-        if self.y > self.display[1]:
-            self.y = 0 - self.height
-        # Top
-        if self.y < 0 - self.height:
-            self.y = self.display[1]
+    def _check_limits(self):
+        """ Check borders limits to _player """
         return self
 
-    def tick(self):
-        """ Apply _movement. """
-        self._save_undo()
-        if self._movement == Movement.RIGHT:
-            self.x += self.speed
-        if self._movement == Movement.LEFT:
-            self.x -= self.speed
-        if self._movement == Movement.UP:
-            self.y -= self.speed
-        if self._movement == Movement.DOWN:
-            self.y += self.speed
+    def undo(self):
+        """ Undo position """
+        self.rect = self.rect_undo.copy()
         return self
 
-    def update(self):
-        """ Paint _screen with player setup. """
-        if not self.display:
-            self.display = self._screen.get_size()
-        self.tick().check_limits()
-        self.sprites.draw(self._screen)
-        self.sprites.update(self.x, self.y)
-        self._is_free = True
-        self.set_movement(Movement.NONE)
-        return self
-
-    def is_free(self, obj):
-        """ Verify if players is not in collision. """
-        rect_1 = pygame.Rect(obj.x, obj.y, obj.width, obj.height)
-        rect_2 = pygame.Rect(self.x, self.y, self.width, self.height)
-        self._is_free = not rect_2.colliderect(rect_1)
-        return self._is_free
+    def update(self, *args, **kwargs) -> None:
+        """ Update """
+        pressed_keys = kwargs.get('pressed_keys')
+        if pressed_keys:
+            self.move(pressed_keys)
