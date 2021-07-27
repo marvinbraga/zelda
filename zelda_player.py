@@ -41,17 +41,36 @@ class PlayerSpritesImages(AbstractSpriteManager):
         return self
 
 
+class PlayerLimitsRules:
+    """ Rules to player walk limits """
+    def __init__(self, rect, screen):
+        self._screen = screen
+        self._rect = rect
+
+    def check(self):
+        """ Check rules """
+        w, h = self._screen.get_size()
+        if self._rect.top < 0 - self._rect.height:
+            self._rect.top = h - self._rect.height
+        elif self._rect.top > h:
+            self._rect.top = 0 - self._rect.height
+        elif self._rect.left < 0 - self._rect.width:
+            self._rect.left = w - self._rect.width
+        elif self._rect.left > w:
+            self._rect.left = 0 - self._rect.width
+
+
 class ZeldaPlayer(pygame.sprite.Sprite):
     """ New Class """
 
-    def __init__(self, display_size, sprites, speed=4, scale=1.0):
+    def __init__(self, screen, sprites, speed=4, scale=1.0):
         super(ZeldaPlayer, self).__init__()
         self._scale = scale
         self._speed = speed
         self._sprites = sprites
-        self._display_size = display_size
+        self._screen = screen
         # image load
-        self._sprite = PlayerSpritesImages('./sprites/aula05-spritesheet.png', display_size, 1.9)
+        self._sprite = PlayerSpritesImages('./sprites/aula05-spritesheet.png', screen, 1.9)
         self.image, self.rect = self._sprite.image_rect
         self.rect_undo = self.rect.copy()
         # sprites groups
@@ -87,6 +106,7 @@ class ZeldaPlayer(pygame.sprite.Sprite):
 
     def _check_limits(self):
         """ Check borders limits to _player """
+        PlayerLimitsRules(self.rect, self._screen).check()
         return self
 
     def undo(self):

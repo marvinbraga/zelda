@@ -29,16 +29,14 @@ class ZeldaGame(AbstractGame):
 
     def update(self):
         """ Method to update de zelda game. """
-        self._all_sprites.draw(self.screen)
-
         # Check block collision
         if pygame.sprite.spritecollideany(self._player, self._blocks):
             self._player.undo()
-
+        # Draw all objects
+        self._all_sprites.draw(self.screen)
         # Update world.
         self._world.update()
         self._player.update(pressed_keys=pygame.key.get_pressed())
-
         return self
 
     def check_events(self, event):
