@@ -9,6 +9,7 @@ from abstract_game import AbstractGame
 from zeld_gun import ZeldaDefaultGun
 from zelda_player import ZeldaPlayer
 from zelda_world import ZeldaWorld
+from zelf_enemy import ZeldaEnemy
 
 
 class ZeldaGame(AbstractGame):
@@ -23,9 +24,13 @@ class ZeldaGame(AbstractGame):
         self._guns = pygame.sprite.Group()
         self._blocks = pygame.sprite.Group()
         self._all_sprites = pygame.sprite.Group()
+        # events
+        self.ADD_ENEMY = pygame.USEREVENT + 1
+        pygame.time.set_timer(self.ADD_ENEMY, 20000)
         # actors
         self._player = ZeldaPlayer(self._screen, sprites=[self._all_sprites])
         self._world = ZeldaWorld(self._screen, sprites=[self._all_sprites, self._blocks])
+        self.create_enemies(5)
 
     def title(self):
         """ Get title to window screen. """
@@ -42,8 +47,6 @@ class ZeldaGame(AbstractGame):
             key = K_DOWN
         elif pressed_keys[K_LEFT]:
             key = K_LEFT
-        # elif pressed_keys[K_RIGHT]:
-        #     key = K_RIGHT
         return key
 
     def update(self):
@@ -51,14 +54,21 @@ class ZeldaGame(AbstractGame):
         # Check block collision
         if pygame.sprite.spritecollideany(self._player, self._blocks):
             self._player.undo()
+        # Guns and blocks
+        for gun in self._guns:
+            if pygame.sprite.spritecollideany(gun, self._blocks):
+                gun.show_explosion()
+
+        for gun in self._guns:
+            for enemy in self._enemies:
+                if pygame.sprite.collide_mask(gun, enemy):
+                    gun.show_explosion()
+                    enemy.kill()
+
+        # Player and enemies
         if pygame.sprite.spritecollideany(self._player, self._enemies):
             self._player.kill()
             self.running = False
-        for gun in self._guns:
-            if pygame.sprite.spritecollideany(gun, self._blocks):
-                gun.kill()
-            # if pygame.sprite.collide_rect(self._player, gun):
-            #     gun.kill()
 
         # Draw all objects
         self._all_sprites.draw(self.screen)
@@ -70,11 +80,25 @@ class ZeldaGame(AbstractGame):
 
         return self
 
+    def check_keys(self, event):
+        """ Check key events """
+        if event.key == K_SPACE:
+            # Create a shot gun
+            ZeldaDefaultGun(
+                pos=self._player.rect, screen=self._screen, sprites=[self._all_sprites, self._guns],
+                key=self._get_pressed_key()
+            )
+
     def check_events(self, event):
         """ Method to check events updates. """
-        # if event.type == self.ADD_ENEMY:
-        #     self.create_enemies(1)
+        if event.type == self.ADD_ENEMY:
+            self.create_enemies(1)
         # elif event.type == self.ADD_BLOCK:
         #     self.create_blocks(1)
-        if event.key == K_SPACE:
-            ZeldaDefaultGun(self._screen, [self._all_sprites, self._guns], self._get_pressed_key(), self._player.rect)
+
+    def create_enemies(self, count):
+        """ Create instance of enemy """
+        for i in range(count):
+            ZeldaEnemy(screen=self._screen, sprites=[self._all_sprites, self._enemies], speed=2)
+        return self
+

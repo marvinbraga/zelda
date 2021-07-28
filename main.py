@@ -24,9 +24,9 @@ def start(game):
                 if event.key == K_ESCAPE:
                     game.running = False
                 if event.key == K_SPACE:
-                    game.check_events(event)
-            # else:
-            #     game.check_events(event)
+                    game.check_keys(event)
+            else:
+                game.check_events(event)
 
         game.update()
         # Update pygame screen.

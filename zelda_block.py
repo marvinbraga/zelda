@@ -13,12 +13,12 @@ from settings import FileUtil
 class BlockSpritesImages(AbstractSpriteManager):
     """ Images to sprite """
 
-    def __init__(self, filename, pos, scale=1.0, color_key=(116, 116, 116)):
+    def __init__(self, pos, scale=1.0, color_key=(116, 116, 116)):
         super(BlockSpritesImages, self).__init__()
         self._color_key = color_key
         self._scale = scale
         self._pos = pos
-        self._filename = filename
+        self._filename = './sprites/zelda world.png'
         self._load_sprites()
 
     def _load_sprites(self):
@@ -36,7 +36,7 @@ class ZeldaBlock(pygame.sprite.Sprite):
     def __init__(self, pos, sprites):
         super(ZeldaBlock, self).__init__()
         self._sprites = sprites
-        self.image, self.rect = BlockSpritesImages('./sprites/zelda world.png', pos).image_rect
+        self.image, self.rect = BlockSpritesImages(pos).image_rect
         self._add_sprites()
 
     def _add_sprites(self):
@@ -44,7 +44,3 @@ class ZeldaBlock(pygame.sprite.Sprite):
         for s in self._sprites:
             s.add(self)
         return self
-
-    def update(self, *args, **kwargs) -> None:
-        """ Update """
-        pass

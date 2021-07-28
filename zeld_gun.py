@@ -2,8 +2,10 @@
 """
 Zelda Gun Model
 """
+from threading import Thread
+
 import pygame
-from pygame.locals import (K_UP, K_DOWN, K_LEFT, K_RIGHT, RLEACCEL)
+from pygame.locals import (K_UP, K_DOWN, K_LEFT, K_RIGHT, K_SPACE, RLEACCEL)
 
 from abstract_sprite_manager import AbstractSpriteManager
 from settings import FileUtil
@@ -12,10 +14,9 @@ from settings import FileUtil
 class DefaultGunSpritesImages(AbstractSpriteManager):
     """ Default Gun sprite """
 
-    def __init__(self, filename, screen, scale=1.0, color_key=(116, 116, 116)):
+    def __init__(self, screen, scale=1.0, color_key=(116, 116, 116)):
         super(DefaultGunSpritesImages, self).__init__()
         self._color_key = color_key
-        self._filename = filename
         self._scale = scale
         # transform to scale
         w, h = screen.get_size()
@@ -60,7 +61,7 @@ class DefaultGunLimitsRules:
 
 class ZeldaDefaultGun(pygame.sprite.Sprite):
     """ Gun Class """
-    def __init__(self, screen, sprites, key, pos, speed=7, scale=1.0):
+    def __init__(self, pos, screen, sprites, key, speed=7, scale=1.0):
         super(ZeldaDefaultGun, self).__init__()
         self._key = key
         self._scale = scale
@@ -68,7 +69,7 @@ class ZeldaDefaultGun(pygame.sprite.Sprite):
         self._sprites = sprites
         self._screen = screen
         # image load
-        self._sprite = DefaultGunSpritesImages('./sprites/aula05-spritesheet.png', screen, 1.9)
+        self._sprite = DefaultGunSpritesImages(screen, 1.9)
         self.image, _ = self._sprite.image_rect
         self.rect = pos
         self.rect_undo = self.rect.copy()
@@ -105,7 +106,6 @@ class ZeldaDefaultGun(pygame.sprite.Sprite):
     def _check_limits(self):
         """ Check borders limits to _player """
         if not DefaultGunLimitsRules(self.rect, self._screen).check():
-            self._update_image_rect((4, 4))
             self.kill()
         return self
 
@@ -116,3 +116,15 @@ class ZeldaDefaultGun(pygame.sprite.Sprite):
     def kill(self) -> None:
         """ kill gun """
         super(ZeldaDefaultGun, self).kill()
+
+    def show_explosion(self):
+        """ Create a explosion """
+        def execute():
+            """ Execute """
+            self._key = K_SPACE
+            pygame.time.delay(50)
+            self._update_image_rect((4, 4))
+            pygame.time.delay(500)
+            self.kill()
+
+        Thread(target=execute).start()

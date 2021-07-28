@@ -1,7 +1,9 @@
 # coding=utf-8
 """
-ZeldaPlayer Module
+Zelda Enemy Module
 """
+import random
+
 import pygame
 from pygame.locals import (K_UP, K_DOWN, K_LEFT, K_RIGHT, RLEACCEL)
 
@@ -9,17 +11,17 @@ from abstract_sprite_manager import AbstractSpriteManager
 from settings import FileUtil
 
 
-class PlayerSpritesImages(AbstractSpriteManager):
+class EnemySpritesImages(AbstractSpriteManager):
     """ Images to sprite """
 
     def __init__(self, screen, pos=(0, 0), scale=1.0, color_key=(116, 116, 116)):
-        super(PlayerSpritesImages, self).__init__()
+        super(EnemySpritesImages, self).__init__()
         self._color_key = color_key
         self._filename = './sprites/aula05-spritesheet.png'
         self._scale = scale
         # transform to scale
         w, h = screen.get_size()
-        kwargs = {'topleft': (w / 2 - 16, h / 2 - 16)}
+        kwargs = {'topleft': (random.randint(32, w - 64), random.randint(32, h - 64))}
         if pos != (0, 0):
             kwargs = {'topleft': pos}
         self._load_sprites().set_index((0, 1)).prepare_image(**kwargs)
@@ -27,7 +29,7 @@ class PlayerSpritesImages(AbstractSpriteManager):
     def _load_sprites(self):
         # constants
         size = (16, 16)
-        basic_movement = ((1, 11), (18, 11), (35, 11), (52, 11), (69, 11), (86, 11))
+        basic_movement = ((143, 209), (160, 209), (177, 209), (194, 209), (211, 209), (228, 209))
         # get sprites
         img = FileUtil(self._filename).get()
         img = pygame.image.load(img).convert_alpha()
@@ -44,8 +46,9 @@ class PlayerSpritesImages(AbstractSpriteManager):
         return self
 
 
-class PlayerLimitsRules:
+class EnemyLimitsRules:
     """ Rules to player walk limits """
+
     def __init__(self, rect, screen):
         self._screen = screen
         self._rect = rect
@@ -63,17 +66,17 @@ class PlayerLimitsRules:
             self._rect.left = 0 - self._rect.width
 
 
-class ZeldaPlayer(pygame.sprite.Sprite):
+class ZeldaEnemy(pygame.sprite.Sprite):
     """ New Class """
 
     def __init__(self, screen, sprites, speed=4, scale=1.0):
-        super(ZeldaPlayer, self).__init__()
+        super(ZeldaEnemy, self).__init__()
         self._scale = scale
         self._speed = speed
         self._sprites = sprites
         self._screen = screen
         # image load
-        self._sprite = PlayerSpritesImages(screen=screen, scale=2.0)
+        self._sprite = EnemySpritesImages(screen=screen, scale=2.0)
         self.image, self.rect = self._sprite.image_rect
         self.rect_undo = self.rect.copy()
         # sprites groups
@@ -109,7 +112,7 @@ class ZeldaPlayer(pygame.sprite.Sprite):
 
     def _check_limits(self):
         """ Check borders limits to _player """
-        PlayerLimitsRules(self.rect, self._screen).check()
+        EnemyLimitsRules(self.rect, self._screen).check()
         return self
 
     def undo(self):
