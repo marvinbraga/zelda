@@ -34,7 +34,7 @@ class ZeldaGame(AbstractGame):
     @staticmethod
     def _get_pressed_key():
         """ Return pressed key  """
-        key = None
+        key = K_RIGHT
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_UP]:
             key = K_UP
@@ -42,8 +42,8 @@ class ZeldaGame(AbstractGame):
             key = K_DOWN
         elif pressed_keys[K_LEFT]:
             key = K_LEFT
-        elif pressed_keys[K_RIGHT]:
-            key = K_RIGHT
+        # elif pressed_keys[K_RIGHT]:
+        #     key = K_RIGHT
         return key
 
     def update(self):
@@ -64,9 +64,9 @@ class ZeldaGame(AbstractGame):
         self._all_sprites.draw(self.screen)
         # Update world.
         self._world.update()
-        self._player.update(pressed_keys=pygame.key.get_pressed())
         self._enemies.update()
         self._guns.update()
+        self._player.update(pressed_keys=pygame.key.get_pressed())
 
         return self
 
