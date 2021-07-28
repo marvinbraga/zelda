@@ -24,10 +24,10 @@ class ZeldaWorld:
             self.blocks.append(ZeldaBlock(pos=(x * size, 0), sprites=self._sprites))
         for x in range(col_blocks):
             self.blocks.append(ZeldaBlock(pos=(x * size, h - size), sprites=self._sprites))
-        for y in range(row_blocks):
-            self.blocks.append(ZeldaBlock(pos=(0, y * size), sprites=self._sprites))
-        for y in range(row_blocks):
-            self.blocks.append(ZeldaBlock(pos=(w - size, y * size), sprites=self._sprites))
+        # for y in range(row_blocks):
+        #     self.blocks.append(ZeldaBlock(pos=(0, y * size), sprites=self._sprites))
+        # for y in range(row_blocks):
+        #     self.blocks.append(ZeldaBlock(pos=(w - size, y * size), sprites=self._sprites))
         return self
 
     def update(self):

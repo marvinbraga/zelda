@@ -23,8 +23,10 @@ def start(game):
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     game.running = False
-            else:
-                game.check_events(event)
+                if event.key == K_SPACE:
+                    game.check_events(event)
+            # else:
+            #     game.check_events(event)
 
         game.update()
         # Update pygame screen.
