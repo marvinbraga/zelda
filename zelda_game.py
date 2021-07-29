@@ -102,7 +102,6 @@ class ZeldaGame(AbstractGame):
         self._enemies.update()
         self._guns.update()
         self._player.update(pressed_keys=pygame.key.get_pressed())
-
         return self
 
     def check_keys(self, event):
