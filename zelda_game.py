@@ -54,9 +54,9 @@ class ZeldaGame(AbstractGame):
 
     def enemies_move(self):
         """ Make enemies moves """
-        x, y, w, h = self._player.rect
+        x, y = self._player.rect.center
         for enemy in self._enemies:
-            ex, ey, ew, eh = enemy.rect
+            ex, ey = enemy.rect.center
             if ex < x:
                 enemy.update(pressed_keys={K_RIGHT: True, K_LEFT: False, K_DOWN: False, K_UP: False})
             elif ex > x:
