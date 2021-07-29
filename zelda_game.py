@@ -87,7 +87,7 @@ class ZeldaGame(AbstractGame):
 
         for block in self._blocks:
             for enemy in self._enemies:
-                if pygame.sprite.collide_mask(block, enemy):
+                if pygame.sprite.collide_rect(block, enemy):
                     enemy.undo()
 
         # Player and enemies
