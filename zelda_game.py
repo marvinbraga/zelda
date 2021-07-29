@@ -27,6 +27,8 @@ class ZeldaGame(AbstractGame):
         # events
         self.ADD_ENEMY = pygame.USEREVENT + 1
         pygame.time.set_timer(self.ADD_ENEMY, 20000)
+        self.ADD_BLOCK = pygame.USEREVENT + 2
+        pygame.time.set_timer(self.ADD_BLOCK, 5000)
         # actors
         self._player = ZeldaPlayer(self._screen, sprites=[self._all_sprites])
         self._world = ZeldaWorld(self._screen, sprites=[self._all_sprites, self._blocks])
@@ -49,8 +51,13 @@ class ZeldaGame(AbstractGame):
             key = K_LEFT
         return key
 
+    def enemies_move(self):
+        """ Make enemies moves """
+        return self
+
     def update(self):
         """ Method to update de zelda game. """
+        self.enemies_move()
         # Check block collision
         if pygame.sprite.spritecollideany(self._player, self._blocks):
             self._player.undo()
@@ -93,12 +100,11 @@ class ZeldaGame(AbstractGame):
         """ Method to check events updates. """
         if event.type == self.ADD_ENEMY:
             self.create_enemies(1)
-        # elif event.type == self.ADD_BLOCK:
-        #     self.create_blocks(1)
+        elif event.type == self.ADD_BLOCK:
+            self._world.add_block()
 
     def create_enemies(self, count):
         """ Create instance of enemy """
         for i in range(count):
             ZeldaEnemy(screen=self._screen, sprites=[self._all_sprites, self._enemies], speed=2)
         return self
-
