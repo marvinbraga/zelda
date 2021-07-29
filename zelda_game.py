@@ -26,13 +26,14 @@ class ZeldaGame(AbstractGame):
         self._all_sprites = pygame.sprite.Group()
         # events
         self.ADD_ENEMY = pygame.USEREVENT + 1
-        pygame.time.set_timer(self.ADD_ENEMY, 20000)
+        pygame.time.set_timer(self.ADD_ENEMY, 10000)
         self.ADD_BLOCK = pygame.USEREVENT + 2
         pygame.time.set_timer(self.ADD_BLOCK, 5000)
         # actors
         self._player = ZeldaPlayer(self._screen, sprites=[self._all_sprites])
-        self._world = ZeldaWorld(self._screen, sprites=[self._all_sprites, self._blocks])
-        self.create_enemies(5)
+        self._world = ZeldaWorld(screen=self._screen, sprites=[self._all_sprites, self._blocks], player=self._player)
+        self.create_enemies(3)
+        self._enemies_count = 1
 
     def title(self):
         """ Get title to window screen. """
@@ -53,6 +54,18 @@ class ZeldaGame(AbstractGame):
 
     def enemies_move(self):
         """ Make enemies moves """
+        x, y, w, h = self._player.rect
+        for enemy in self._enemies:
+            ex, ey, ew, eh = enemy.rect
+            if ex < x:
+                enemy.update(pressed_keys={K_RIGHT: True, K_LEFT: False, K_DOWN: False, K_UP: False})
+            elif ex > x:
+                enemy.update(pressed_keys={K_RIGHT: False, K_LEFT: True, K_DOWN: False, K_UP: False})
+            if ey < y:
+                enemy.update(pressed_keys={K_RIGHT: False, K_LEFT: False, K_DOWN: True, K_UP: False})
+            elif ey > y:
+                enemy.update(pressed_keys={K_RIGHT: False, K_LEFT: False, K_DOWN: False, K_UP: True})
+
         return self
 
     def update(self):
@@ -71,6 +84,11 @@ class ZeldaGame(AbstractGame):
                 if pygame.sprite.collide_mask(gun, enemy):
                     gun.show_explosion()
                     enemy.kill()
+
+        for block in self._blocks:
+            for enemy in self._enemies:
+                if pygame.sprite.collide_mask(block, enemy):
+                    enemy.undo()
 
         # Player and enemies
         if pygame.sprite.spritecollideany(self._player, self._enemies):
@@ -99,7 +117,8 @@ class ZeldaGame(AbstractGame):
     def check_events(self, event):
         """ Method to check events updates. """
         if event.type == self.ADD_ENEMY:
-            self.create_enemies(1)
+            self._enemies_count *= 2
+            self.create_enemies(self._enemies_count)
         elif event.type == self.ADD_BLOCK:
             self._world.add_block()
 

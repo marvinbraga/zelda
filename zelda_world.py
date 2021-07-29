@@ -10,7 +10,8 @@ from zelda_block import ZeldaBlock
 class ZeldaWorld:
     """ World class """
 
-    def __init__(self, screen, sprites):
+    def __init__(self, screen, sprites, player):
+        self._player = player
         self._size = 32
         self._sprites = sprites
         self._screen = screen

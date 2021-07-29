@@ -40,7 +40,7 @@ class EnemySpritesImages(AbstractSpriteManager):
         # Add left movement
         for pos in basic_movement:
             rect = (pos[0], pos[1], size[0], size[1])
-            if pos[0] in [35, 52]:
+            if pos[0] in [177, 194]:
                 # Flip the image to left movement
                 self._sprites.append(pygame.transform.flip(img.subsurface(rect), True, False))
         return self

@@ -43,9 +43,12 @@ class AbstractSpriteManager(metaclass=ABCMeta):
 
     def prepare_image(self, **kwargs):
         """ Prepare image from sprite """
-        self._image = self._sprites[int(self._index)]
-        self._transform()
-        self._rect = self._image.get_rect(**kwargs)
+        try:
+            self._image = self._sprites[int(self._index)]
+            self._transform()
+            self._rect = self._image.get_rect(**kwargs)
+        except Exception as e:
+            print('Error: ', e, 'Index: ', int(self._index))
         return self
 
     @property

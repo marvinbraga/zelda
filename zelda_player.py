@@ -73,7 +73,7 @@ class ZeldaPlayer(pygame.sprite.Sprite):
         self._sprites = sprites
         self._screen = screen
         # image load
-        self._sprite = PlayerSpritesImages(screen=screen, scale=2.0)
+        self._sprite = PlayerSpritesImages(screen=screen, scale=1.8)
         self.image, self.rect = self._sprite.image_rect
         self.rect_undo = self.rect.copy()
         # sprites groups
