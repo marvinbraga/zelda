@@ -6,8 +6,8 @@ Zelda Block Module
 import pygame
 from pygame.locals import RLEACCEL
 
-from abstract_sprite_manager import AbstractSpriteManager
-from settings import FileUtil
+from base.abstract_sprite_manager import AbstractSpriteManager
+from base.settings import FileUtil
 
 
 class BlockSpritesImages(AbstractSpriteManager):
@@ -18,7 +18,7 @@ class BlockSpritesImages(AbstractSpriteManager):
         self._color_key = color_key
         self._scale = scale
         self._pos = pos
-        self._filename = './sprites/zelda world.png'
+        self._filename = '../sprites/zelda world.png'
         self._load_sprites()
 
     def _load_sprites(self):

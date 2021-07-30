@@ -5,11 +5,11 @@ Game Module
 import pygame.time
 from pygame.locals import (K_UP, K_DOWN, K_LEFT, K_RIGHT, K_SPACE)
 
-from abstract_game import AbstractGame
-from zelda_gun import ZeldaDefaultGun
-from zelda_player import ZeldaPlayer
-from zelda_world import ZeldaWorld
-from zelda_enemy import ZeldaEnemy
+from base.abstract_game import AbstractGame
+from game.zelda_gun import ZeldaDefaultGun
+from game.zelda_player import ZeldaPlayer
+from game.zelda_world import ZeldaWorld
+from game.zelda_enemy import ZeldaEnemy
 
 
 class ZeldaGame(AbstractGame):

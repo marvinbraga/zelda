@@ -7,8 +7,8 @@ import random
 import pygame
 from pygame.locals import (K_UP, K_DOWN, K_LEFT, K_RIGHT, RLEACCEL)
 
-from abstract_sprite_manager import AbstractSpriteManager
-from settings import FileUtil
+from base.abstract_sprite_manager import AbstractSpriteManager
+from base.settings import FileUtil
 
 
 class EnemySpritesImages(AbstractSpriteManager):
@@ -17,7 +17,7 @@ class EnemySpritesImages(AbstractSpriteManager):
     def __init__(self, screen, pos=(0, 0), scale=1.0, color_key=(116, 116, 116)):
         super(EnemySpritesImages, self).__init__()
         self._color_key = color_key
-        self._filename = './sprites/aula05-spritesheet.png'
+        self._filename = '../sprites/aula05-spritesheet.png'
         self._scale = scale
         # transform to scale
         w, h = screen.get_size()

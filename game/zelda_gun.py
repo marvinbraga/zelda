@@ -7,8 +7,8 @@ from threading import Thread
 import pygame
 from pygame.locals import (K_UP, K_DOWN, K_LEFT, K_RIGHT, K_SPACE, RLEACCEL)
 
-from abstract_sprite_manager import AbstractSpriteManager
-from settings import FileUtil
+from base.abstract_sprite_manager import AbstractSpriteManager
+from base.settings import FileUtil
 
 
 class DefaultGunSpritesImages(AbstractSpriteManager):
@@ -26,7 +26,7 @@ class DefaultGunSpritesImages(AbstractSpriteManager):
         # constants
         weapons = ((1, 185, 8, 16), (10, 185, 16, 16), (53, 185, 8, 16))
         # get sprites
-        img = FileUtil('./sprites/aula05-spritesheet.png').get()
+        img = FileUtil('../sprites/aula05-spritesheet.png').get()
         img = pygame.image.load(img).convert_alpha()
         img.set_colorkey(self._color_key, RLEACCEL)
         h, v = False, True

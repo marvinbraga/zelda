@@ -4,7 +4,7 @@ Zelda World Module
 """
 import random
 
-from zelda_block import ZeldaBlock
+from game.zelda_block import ZeldaBlock
 
 
 class ZeldaWorld:

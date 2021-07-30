@@ -5,7 +5,7 @@ Main Module
 import pygame
 from pygame.locals import *
 
-from zelda_game import ZeldaGame
+from game.zelda_game import ZeldaGame
 
 
 def start(game):
