@@ -92,8 +92,8 @@ class ZeldaGame(AbstractGame):
 
         # Player and enemies
         if pygame.sprite.spritecollideany(self._player, self._enemies):
-            self._player.kill()
             self.running = False
+            self._player.kill()
 
         # Draw all objects
         self._all_sprites.draw(self.screen)
