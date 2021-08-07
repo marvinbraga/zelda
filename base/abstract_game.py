@@ -10,7 +10,8 @@ import pygame
 class AbstractGame(metaclass=ABCMeta):
     """ Class main to game Zelda """
 
-    def __init__(self, display_size):
+    def __init__(self, display_size, mps=60):
+        self._mps = mps
         self._display_size = display_size
         self._screen = None
         self.running = True
@@ -27,19 +28,19 @@ class AbstractGame(metaclass=ABCMeta):
         """ Return screen """
         return self._screen
 
+    def fill_background(self, color=(0, 0, 0)):
+        """ Update background. """
+        self.timer.tick(self._mps)
+        self._screen.fill(color)
+        if self.background:
+            self._screen.blit(self.background, (0, 0))
+        return self
+
     @property
     @abstractmethod
     def title(self):
         """ Get title to window screen. """
         pass
-
-    def fill_background(self, color=(0, 0, 0)):
-        """ Update background. """
-        self.timer.tick(60)
-        self._screen.fill(color)
-        if self.background:
-            self._screen.blit(self.background, (0, 0))
-        return self
 
     @abstractmethod
     def update(self):
