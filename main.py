@@ -23,7 +23,7 @@ def start(game):
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     game.running = False
-                if event.key == K_SPACE:
+                if event.key in [K_SPACE]:
                     game.check_keys(event)
             else:
                 game.check_events(event)

@@ -26,14 +26,14 @@ class ZeldaGame(AbstractGame):
         self._all_sprites = pygame.sprite.Group()
         # events
         self.ADD_ENEMY = pygame.USEREVENT + 1
-        pygame.time.set_timer(self.ADD_ENEMY, 10000)
+        pygame.time.set_timer(self.ADD_ENEMY, 4000)
         self.ADD_BLOCK = pygame.USEREVENT + 2
         pygame.time.set_timer(self.ADD_BLOCK, 5000)
         # actors
         self._player = ZeldaPlayer(self._screen, sprites=[self._all_sprites])
         self._world = ZeldaWorld(screen=self._screen, sprites=[self._all_sprites, self._blocks], player=self._player)
-        self.create_enemies(3)
-        self._enemies_count = 1
+        self._enemies_count = (1, 2)
+        self.create_enemies(self._enemies_count)
 
     def title(self):
         """ Get title to window screen. """
@@ -116,13 +116,14 @@ class ZeldaGame(AbstractGame):
     def check_events(self, event):
         """ Method to check events updates. """
         if event.type == self.ADD_ENEMY:
-            self._enemies_count *= 2
+            # Fibonacci
+            self._enemies_count = self._enemies_count[1], self._enemies_count[0] + self._enemies_count[1]
             self.create_enemies(self._enemies_count)
         elif event.type == self.ADD_BLOCK:
             self._world.add_block()
 
     def create_enemies(self, count):
         """ Create instance of enemy """
-        for i in range(count):
+        for i in range(count[0]):
             ZeldaEnemy(screen=self._screen, sprites=[self._all_sprites, self._enemies], speed=2)
         return self
